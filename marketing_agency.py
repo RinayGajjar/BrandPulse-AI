@@ -19,7 +19,7 @@ if not os.getenv("GROQ_API_KEY"):
     raise ValueError("Missing GROQ_API_KEY in environment variables")
 
 def init_streamlit():
-    st.set_page_config(page_title="Market Pulse", layout="wide")
+    st.set_page_config(page_title="BrandPulse AI", layout="wide")
     
     # Update custom CSS with new background
     st.markdown("""
