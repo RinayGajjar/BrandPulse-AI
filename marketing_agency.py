@@ -21,226 +21,209 @@ if not os.getenv("GROQ_API_KEY"):
 def init_streamlit():
     st.set_page_config(page_title="BrandPulse AI", layout="wide")
     
-    # Update custom CSS with new background
+    # Update custom CSS with theme adaptability
     st.markdown("""
     <style>
-    /* Coffee Color Palette */
+    /* Color Palette Variables */
     :root {
-        --coffee-dark: #3a2618;      /* Dark Roast */
-        --coffee-medium: #8b4513;    /* Medium Roast */
-        --coffee-light: #c68f65;     /* Light Roast */
-        --cream: #e6d5c9;            /* Cream */
-        --mint: #98c1a9;             /* Complementary Green */
-        --caramel: #d4a76a;          /* Caramel Accent */
-        --mocha: #7b5d4f;            /* Mocha */
-        --espresso: #4a3428;         /* Espresso */
+        /* Dark theme colors */
+        --dark-bg: #1E1E1E;
+        --dark-card: rgba(42, 42, 74, 0.95);
+        --dark-text: #e6d5c9;
+        
+        /* Light theme colors */
+        --light-bg: #f8f9fa;
+        --light-card: rgba(255, 255, 255, 0.95);
+        --light-text: #2c1810;
+        
+        /* Common colors */
+        --accent: #c68f65;
+        --accent-dark: #8b4513;
+        --accent-light: #d4a76a;
     }
     
-    /* Modern Dark Theme with Coffee Tones */
+    /* Theme-adaptive styles */
+    .stApp {
+        transition: all 0.3s ease;
+    }
+    
+    /* Dark theme (default) */
     .stApp {
         background-image: linear-gradient(rgba(20, 14, 10, 0.75), rgba(30, 20, 15, 0.85)), 
             url('https://cdn.dribbble.com/userupload/36521817/file/original-f4f6de2ea8cb1e71ea872587ccb15c78.jpg');
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
-        background-repeat: no-repeat;
-        color: #e6d5c9;
+        color: var(--dark-text);
     }
     
-    /* Add subtle animation to gradient */
-    @keyframes gradientShift {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
+    /* Light theme adaptations */
+    [data-theme="light"] .stApp {
+        background-image: linear-gradient(rgba(255, 255, 255, 0.85), rgba(248, 249, 250, 0.9)), 
+            url('https://cdn.dribbble.com/userupload/36521817/file/original-f4f6de2ea8cb1e71ea872587ccb15c78.jpg');
+        color: var(--light-text);
     }
     
-    /* Dashboard Cards with Warm Glass Effect */
+    /* Cards and Containers */
     .dashboard-card, .competitor-card {
-        background: linear-gradient(145deg, var(--espresso), var(--coffee-dark)) !important;
-        backdrop-filter: blur(20px);
-        border: 1px solid var(--caramel) !important;
-        box-shadow: 0 8px 32px rgba(20, 10, 5, 0.3);
+        background: var(--dark-card);
+        border: 1px solid var(--accent);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
     }
     
-    /* Marketing-focused Header with Coffee Gradient */
-    .header {
-        background: linear-gradient(90deg, #c68f65, #8b4513);
-        color: #fff5eb;
-        padding: 25px;
-        border-radius: 15px;
-        text-align: center;
-        font-family: 'Poppins', sans-serif;
-        font-size: 2.5em;
-        font-weight: 600;
-        margin-bottom: 30px;
-        box-shadow: 0 0 20px rgba(198, 143, 101, 0.2);
+    [data-theme="light"] .dashboard-card, 
+    [data-theme="light"] .competitor-card {
+        background: var(--light-card);
+        border: 1px solid var(--accent-light);
+        color: var(--light-text);
     }
     
-    /* Dashboard Cards */
-    .dashboard-card {
-        background: rgba(42, 42, 74, 0.9);
-        border-radius: 15px;
-        padding: 25px;
-        margin: 20px 0;
-        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    /* Results Container */
-    .results-container {
-        background: linear-gradient(135deg, rgba(42, 42, 74, 0.9), rgba(26, 26, 46, 0.9));
-        border-radius: 20px;
-        padding: 30px;
-        margin: 25px 0;
-    }
-    
-    /* Status Badges */
-    .status-badge {
-        display: inline-block;
-        padding: 5px 15px;
-        border-radius: 20px;
-        font-size: 14px;
-        font-weight: 500;
-        margin: 5px;
-    }
-    
-    .status-badge.success {
-        background: rgba(46, 213, 115, 0.2);
-        color: #2ed573;
-        border: 1px solid rgba(46, 213, 115, 0.4);
-    }
-    
-    /* Input Fields with Enhanced Coffee Style */
-    .stTextInput > div > div > input {
-        background-color: var(--espresso) !important;
-        color: var(--cream) !important;
-        border: 2px solid var(--coffee-medium) !important;
-        border-radius: 10px !important;
-        padding: 12px !important;
-        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2) !important;
-    }
-    
-    .stTextInput > div > div > input:focus {
-        border-color: var(--caramel) !important;
-        box-shadow: 0 0 10px rgba(212, 167, 106, 0.3) !important;
-        background-color: var(--coffee-dark) !important;
-    }
-    
-    .stTextInput > div > div > input::placeholder {
-        color: rgba(230, 213, 201, 0.6) !important;
-    }
-    
-    /* Buttons with Rich Coffee Gradient */
-    .stButton > button {
-        background: linear-gradient(135deg, var(--coffee-medium), var(--mocha)) !important;
-        color: var(--cream) !important;
-        border: 1px solid var(--caramel) !important;
-        border-radius: 12px !important;
-        padding: 14px 28px !important;
-        font-weight: 600 !important;
-        letter-spacing: 0.5px !important;
-        box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3) !important;
-        transition: all 0.3s ease !important;
-        text-transform: uppercase !important;
-        font-size: 14px !important;
-    }
-    
-    .stButton > button:hover {
-        background: linear-gradient(135deg, var(--coffee-light), var(--coffee-medium)) !important;
-        border-color: var(--mint) !important;
-    }
-    
-    .stButton > button:active {
-        transform: translateY(1px) !important;
-        box-shadow: 0 2px 10px rgba(139, 69, 19, 0.2) !important;
-    }
-    
-    /* Selectbox with Coffee Style */
+    /* Input Fields */
+    .stTextInput > div > div > input,
+    .stNumberInput > div > div > input,
     .stSelectbox > div > div {
-        background-color: rgba(44, 28, 20, 0.9) !important;
-        border: 2px solid #8b4513 !important;
-        border-radius: 10px !important;
+        background-color: rgba(74, 52, 40, 0.1) !important;
+        color: var(--dark-text) !important;
+        border: 2px solid var(--accent-dark) !important;
+        transition: all 0.3s ease !important;
     }
     
-    .stSelectbox > div > div:hover {
-        border-color: #c68f65 !important;
+    [data-theme="light"] .stTextInput > div > div > input,
+    [data-theme="light"] .stNumberInput > div > div > input,
+    [data-theme="light"] .stSelectbox > div > div {
+        background-color: rgba(255, 255, 255, 0.9) !important;
+        color: var(--light-text) !important;
+        border-color: var(--accent) !important;
     }
     
-    .stSelectbox > div > div > div {
-        color: #e6d5c9 !important;
+    /* Buttons */
+    .stButton > button {
+        background: linear-gradient(135deg, var(--accent), var(--accent-dark)) !important;
+        color: white !important;
+        border: none !important;
+        transition: all 0.3s ease !important;
     }
     
-    /* Number Input with Coffee Style */
-    .stNumberInput > div > div > input {
-        background-color: rgba(44, 28, 20, 0.9) !important;
-        color: #e6d5c9 !important;
-        border: 2px solid #8b4513 !important;
-        border-radius: 10px !important;
-        padding: 12px !important;
+    [data-theme="light"] .stButton > button {
+        background: linear-gradient(135deg, var(--accent-light), var(--accent)) !important;
+        color: var(--light-text) !important;
     }
     
-    .stNumberInput > div > div > input:focus {
-        border-color: #c68f65 !important;
-        box-shadow: 0 0 10px rgba(198, 143, 101, 0.3) !important;
+    /* Metric Boxes */
+    .metric-box {
+        background: rgba(108, 99, 255, 0.15);
+        border: 1px solid var(--accent);
+        transition: all 0.3s ease;
+    }
+    
+    [data-theme="light"] .metric-box {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid var(--accent-light);
+        color: var(--light-text);
+    }
+    
     /* Tables */
     .dataframe {
-        width: 100%;
-        margin: 20px 0;
-        border-collapse: separate;
-        border-spacing: 0;
-        border-radius: 15px;
-        overflow: hidden;
+        background: var(--dark-card);
+        color: var(--dark-text);
+        transition: all 0.3s ease;
     }
     
-    .dataframe th {
-        background: linear-gradient(90deg, #6c63ff, #ff4b6c);
-        color: white;
-        padding: 15px;
-        text-align: left;
+    [data-theme="light"] .dataframe {
+        background: var(--light-card);
+        color: var(--light-text);
     }
     
-    .dataframe td {
-        padding: 12px 15px;
-        border-bottom: 1px solid rgba(108, 99, 255, 0.1);
+    /* Text and Headers */
+    h1, h2, h3, h4, h5, h6, p {
+        color: var(--dark-text);
+        transition: all 0.3s ease;
     }
     
-    /* Add custom fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Inter:wght@400;500&display=swap');
-    
-    /* Enhanced Competitor Analysis Card */
-    .competitor-card {
-        background: rgba(42, 42, 74, 0.95);
-        border-radius: 15px;
-        padding: 20px;
-        margin: 15px 0;
-        border-left: 4px solid #6c63ff;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    [data-theme="light"] h1,
+    [data-theme="light"] h2,
+    [data-theme="light"] h3,
+    [data-theme="light"] h4,
+    [data-theme="light"] h5,
+    [data-theme="light"] h6,
+    [data-theme="light"] p {
+        color: var(--light-text);
     }
     
-    .metric-box {
-        background: linear-gradient(145deg, rgba(152, 193, 169, 0.1), rgba(212, 167, 106, 0.1)) !important;
-        background: linear-gradient(145deg, rgba(108, 99, 255, 0.15), rgba(255, 75, 108, 0.15));
-        box-shadow: 0 4px 15px rgba(108, 99, 255, 0.1);
-        border-radius: 10px;
-        padding: 15px;
-        margin: 10px 0;
-        border: 1px solid rgba(108, 99, 255, 0.2);
+    /* Progress Bars */
+    .stProgress > div > div {
+        background-color: var(--accent) !important;
     }
     
-    .recommendation-box {
-        background: linear-gradient(145deg, rgba(255, 75, 108, 0.1), rgba(108, 99, 255, 0.1));
-        border-radius: 10px;
-        padding: 20px;
-        margin: 10px 0;
-        border-left: 4px solid #ff4b6c;
+    /* Expander */
+    .streamlit-expanderHeader {
+        background-color: transparent !important;
+        color: var(--dark-text) !important;
     }
     
-    .recommendation-item {
-        margin: 10px 0;
-        padding: 10px;
-        background: rgba(42, 42, 74, 0.3);
-        border-radius: 8px;
+    [data-theme="light"] .streamlit-expanderHeader {
+        color: var(--light-text) !important;
+    }
+    
+    /* Clean, Professional Tab Styling */
+    .stTabs {
+        margin-top: 20px;
+    }
+
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 0 !important;
+        border-bottom: 2px solid rgba(52, 152, 219, 0.2);
+        background: transparent !important;
+    }
+
+    .stTabs [data-baseweb="tab"] {
+        padding: 12px 24px !important;
+        font-weight: 500 !important;
+        font-family: 'Inter', sans-serif !important;
+        color: #ECF0F1 !important;
+        background: transparent !important;
+        border: none !important;
+        position: relative;
+        bottom: -2px;
+    }
+
+    .stTabs [data-baseweb="tab"]:hover {
+        color: #3498DB !important;
+    }
+
+    .stTabs [aria-selected="true"] {
+        color: #3498DB !important;
+        border-bottom: 2px solid #3498DB !important;
+        background: transparent !important;
+    }
+
+    /* Clean Tool Selection Area */
+    .tool-selection {
+        padding: 20px 0;
+        margin-bottom: 20px;
+        background: transparent;
+    }
+
+    /* Remove glass effect from content area */
+    .tab-content {
+        background: transparent;
+        padding: 20px 0;
+    }
+
+    /* Light theme adjustments */
+    [data-theme="light"] .stTabs [data-baseweb="tab"] {
+        color: #2C3E50 !important;
+    }
+
+    [data-theme="light"] .stTabs [aria-selected="true"] {
+        color: #3498DB !important;
+    }
+
+    /* Remove any remaining blur effects */
+    .stTabs [data-baseweb="tab-panel"] {
+        backdrop-filter: none !important;
+        background: transparent !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -262,8 +245,8 @@ class MarketingAgencyAutomation:
             )
             return completion.choices[0].message.content
         except Exception as e:
-            print(f"Error getting completion: {e}")
-            return None
+            st.error(f"API Error: {str(e)}")
+            return "Sorry, there was an error generating the content. Please try again later."
 
     def seo_optimizer(self, url: str, keywords: List[str]) -> Dict[str, Any]:
         try:
@@ -442,17 +425,17 @@ def main():
         st.info("Please set up your API key in the .env file:\nGROQ_API_KEY=your_groq_api_key_here")
         return
 
-    # Define tabs
-    tab1, tab2 = st.tabs(["Individual Analysis", "Comprehensive"])
+    # Define tabs with cleaner styling
+    tab1, tab2 = st.tabs(["Individual Analysis", "Comprehensive Analysis"])
 
-    # Tab 1: Individual Analysis
     with tab1:
         st.subheader("Individual Analysis Tools")
         
-        tool = st.selectbox("Select Tool:", 
+        # Clean tool selection
+        tool = st.selectbox("Select Analysis Tool:", 
                            ["SEO Optimizer", "Competitor Watchdog", "Post Creator", "Smart Email Manager"],
                            key="individual_tool")
-
+        
         if tool == "SEO Optimizer":
             url = st.text_input("Website URL:", placeholder="https://example.com", key="ind_seo_url")
             keywords = st.text_input("Target Keywords:", placeholder="e.g., keyword1, keyword2", key="ind_seo_keywords")
@@ -588,7 +571,6 @@ def main():
                             st.subheader(f"Campaign for {segment_name}")
                             st.write(email['content'])
 
-    # Tab 2: Comprehensive
     with tab2:
         st.subheader("Comprehensive Marketing Analysis Dashboard")
         
